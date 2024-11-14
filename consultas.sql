@@ -1,0 +1,3 @@
+SELECT * -- ESTA OK
+FROM MEDICO 
+
