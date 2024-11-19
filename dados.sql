@@ -64,7 +64,6 @@ INSERT INTO ESPORTE(
     2
 );
 
-
 INSERT INTO ESPORTE(
     SIGLA_ESPORTE,
     NOME,
@@ -156,6 +155,55 @@ INSERT INTO TIME (
 );
 
 ----------------------- Inserções de atleta ---------------------
+INSERT INTO ATLETA(
+    CPF,
+    ID_ATLETA,
+    NOME,
+    ATL_SIGLA_TIME,
+    ATL_SIGLA_ESPORTE,
+    DATA,
+    RUA,
+    NUMERO,
+    BAIRRO,
+    CEP,
+    UF
+) VALUES (
+    '454.888.123-09',
+    '25555',
+    UPPER(TRIM('Guilherme Adame Guimarães')),
+    '999',
+    '111',
+    TO_DATE('08/08/2000', 'DD-MM-YYYY'),
+    UPPER(TRIM('rua algusta ferreira batista')),
+    10,
+    UPPER(TRIM('aracy 2')),
+    '12478-992',
+    UPPER(TRIM('mg'))
+);
 
+INSERT INTO ATLETA(
+    CPF,
+    ID_ATLETA,
+    NOME,
+    ATL_SIGLA_TIME,
+    ATL_SIGLA_ESPORTE,
+    DATA,
+    RUA,
+    NUMERO,
+    BAIRRO,
+    CEP,
+    UF
+) VALUES (
+    '575.147.963-25',
+    '12347',
+    UPPER(TRIM('jOÃO GUILHERME')),
+    '989',
+    '112',
+    TO_DATE('12/12/2001', 'DD-MM-YYYY'),
+    UPPER(TRIM('rua ADOLFO CATANU=I')),
+    11,
+    UPPER(TRIM('LUTFALA')),
+    '12458-938',
+    UPPER(TRIM('AL'))
+);
 -- inserts com UPPER(TRIM()) EM TODOS OS NOMES
--- DELETE FROM MEDICO WHERE CRM = 123456
