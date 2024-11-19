@@ -54,6 +54,7 @@ CREATE TABLE TIME (
     CONSTRAINT FK_TIME_TREINADOR FOREIGN KEY(CPF_TREINADOR) REFERENCES TREINADOR(CPF) ON DELETE CASCADE
 );
 
+----------------------- Criação de ATLETA ---------------------
 CREATE TABLE ATLETA (
     CPF CHAR(14) NOT NULL, -- 11 dígitos para o cpf e 4 para ponto e hífen
     ID_ATLETA CHAR(5) NOT NULL, -- 5 digitos para identificação unitária do atleta dentro do campeonato da olimpíada
@@ -74,16 +75,17 @@ CREATE TABLE ATLETA (
     CONSTRAINT CK_UF_ATLETA CHECK( UF IN ('AC', 'AL', 'AP', 'AM', 'BA', 'CE', 'DF', 'ES', 'GO', 'MA', 'MT', 'MS', 'MG', 'PA', 'PB', 'PR', 'PE', 'PI', 'RJ', 'RN', 'RS', 'RO', 'RR', 'SC', 'SP', 'SE', 'TO'))
 );
 
------------------------ Criação de time ---------------------
+----------------------- Criação de PARTIDA ---------------------
 CREATE TABLE PARTIDA (
     DATA DATE NOT NULL, -- DATA E HORÁRIO DE COMEÇO DA PARTIDA
     LOCAL VARCHAR(50) NOT NULL, -- NOME DO LOCAL ONDE SERÁ FEITA A COMPETIÇÃO DAQUELE ESPORTE
     NOME VARCHAR2(100) NOT NULL, -- NOME DESCRITIVO DA PARTIDA (AMISTOSO ENTRE SÃO PAULO E PALMEIRAS)
-    PAR_ESPORTE NOT NULL,
+    SIGLA_ESPORTE CHAR(3) NOT NULL,
     CONSTRAINT PK_PAR PRIMARY KEY(DATA, LOCAL), --  chave primária desta tabela
-    CONSTRAINT FK_PAR_ESPORTE FOREIGN KEY (PAR_ESPORTE) REFERENCES ESPORTE(SIGLA_ESPORTE) ON DELETE CASCADE -- FOI ESCOLHIDO CASCADE POIS ESPORTE É NOT NULL
+    CONSTRAINT FK_PAR_ESPORTE FOREIGN KEY (SIGLA_ESPORTE) REFERENCES ESPORTE(SIGLA_ESPORTE) ON DELETE CASCADE -- FOI ESCOLHIDO CASCADE POIS ESPORTE É NOT NULL
 );
 
+----------------------- Criação de ESTATISTICA DE PARTIDA ---------------------
 CREATE TABLE ESTAT_PARTIDA (
     EST_DATA DATE NOT NULL, -- horario relativo à respectiva partida
     EST_LOCAL VARCHAR2(50) NOT NULL, -- local respectivo à partida em que essa estatistica foi coletada
@@ -93,6 +95,7 @@ CREATE TABLE ESTAT_PARTIDA (
     CONSTRAINT FK_ESTAT_DATA FOREIGN KEY(EST_DATA, EST_LOCAL) REFERENCES PARTIDA(DATA, LOCAL) ON DELETE CASCADE
 );
 
+----------------------- Criação de DISPUTA ---------------------
 CREATE TABLE DISPUTA (
     SIGLA_TIME CHAR(5) NOT NULL, -- Chave estrangeira para TIME
     SIGLA_ESPORTE CHAR(3) NOT NULL, -- Chave estrangeira para esporte
@@ -103,6 +106,24 @@ CREATE TABLE DISPUTA (
     CONSTRAINT FK_DISPUTA_DATA FOREIGN KEY (EST_DATA, EST_LOCAL) REFERENCES PARTIDA(DATA, LOCAL) ON DELETE CASCADE
 );
 
-DROP TABLE PARTIDA;
+----------------------- Criação de ESTÁTISTICA DE ATLETA NA PARTIDA ---------------------
+CREATE TABLE ESTAT_ATLETA_PARTIDA (
+    ATLETA CHAR(14) NOT NULL, -- 11 dígitos para o cpf e 4 para ponto e hífen
+    EST_DATA DATE NOT NULL, -- horario relativo à respectiva partida
+    EST_LOCAL VARCHAR2(50) NOT NULL, -- local respectivo à partida em que essa estatistica foi coletada
+    CRITERIO VARCHAR(20) NOT NULL, -- nome da estatística avaliada àquela partida
+    VALOR NUMBER(4) NOT NULL, -- Acredita-se que as estátisticas aqui sejam todas suficientes até o valor 9999
+    CONSTRAINT PK_ESTAT_ATLETA_PARTIDA PRIMARY KEY(EST_DATA, EST_LOCAL, CRITERIO),
+    CONSTRAINT FK_ESTAT_ATLETA_PARTIDA_DATA FOREIGN KEY(EST_DATA, EST_LOCAL) REFERENCES PARTIDA(DATA, LOCAL) ON DELETE CASCADE
+);
 
-DROP TABLE ESTAT_PARTIDA;
+DELETE
+    FROM PARTIDA A
+    WHERE A.SIGLA_ESPORTE ='222';
+
+SELECT *
+    FROM PARTIDA A
+    WHERE A.SIGLA_ESPORTE ='222';
+
+
+DROP TABLE PARTIDA  CASCADE CONSTRAINTS;
