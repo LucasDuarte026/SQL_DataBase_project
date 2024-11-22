@@ -12,7 +12,7 @@ INSERT INTO MEDICO(
 ) VALUES (
     '111.222.333-44',
     '123456',
-    UPPER(TRIM('Daniel Uemeda Kuhn')),
+    UPPER(TRIM('Daniel Uemeda Kuhn ')),
     TO_DATE('19/04/2003', 'DD/MM/YYYY'),
     UPPER(TRIM('rua alfredo maffei')),
     123,
