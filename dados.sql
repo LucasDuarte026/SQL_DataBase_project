@@ -154,6 +154,18 @@ INSERT INTO TIME (
     '234.565.211-17'
 );
 
+INSERT INTO TIME (
+    SIGLA_TIME,
+    SIGLA_ESPORTE,
+    NOME,
+    CPF_TREINADOR
+) VALUES(
+    '989',
+    '112',
+    UPPER(TRIM('FUTEBOL FEMININO BRASIL')),
+    '234.565.211-17'
+);
+
 ----------------------- Inserções de atleta ---------------------
 INSERT INTO ATLETA(
     CPF,
@@ -244,6 +256,85 @@ INSERT INTO PARTIDA(
     UPPER(TRIM('partida real: JAPÃO X ITALIA')),
     UPPER(TRIM('222'))
 );
+
+INSERT INTO ATLETA(
+    CPF,
+    ID_ATLETA,
+    NOME,
+    ATL_SIGLA_TIME,
+    ATL_SIGLA_ESPORTE,
+    DATA,
+    RUA,
+    NUMERO,
+    BAIRRO,
+    CEP,
+    UF
+) VALUES (
+    '114.118.113-19',
+    '11112',
+    UPPER(TRIM('RODRIGO ALVAREZ GONZALES')),
+    '999',
+    '111',
+    TO_DATE('11/11/2001', 'DD-MM-YYYY'),
+    UPPER(TRIM('rua LUIZ VELTRONI')),
+    10,
+    UPPER(TRIM('EMBARE')),
+    '11128-333',
+    UPPER(TRIM('SP'))
+);
+
+INSERT INTO ATLETA(
+    CPF,
+    ID_ATLETA,
+    NOME,
+    ATL_SIGLA_TIME,
+    ATL_SIGLA_ESPORTE,
+    DATA,
+    RUA,
+    NUMERO,
+    BAIRRO,
+    CEP,
+    UF
+) VALUES (
+    '222.228.133-09',
+    '11155',
+    UPPER(TRIM('JULIA FERNANDES')),
+    '999',
+    '111',
+    TO_DATE('22/02/2002', 'DD-MM-YYYY'),
+    UPPER(TRIM('rua coqueiros dos laranjais')),
+    11,
+    UPPER(TRIM('COQUEIROS')),
+    '12478-992',
+    UPPER(TRIM('PA'))
+);
+
+INSERT INTO ATLETA(
+    CPF,
+    ID_ATLETA,
+    NOME,
+    ATL_SIGLA_TIME,
+    ATL_SIGLA_ESPORTE,
+    DATA,
+    RUA,
+    NUMERO,
+    BAIRRO,
+    CEP,
+    UF
+) VALUES (
+    '113.133.333-22',
+    '12125',
+    UPPER(TRIM('PEdro alvarez albuquerque')),
+    '989',
+    '112',
+    NULL,
+    NULL,
+    NULL,
+    NULL,
+    NULL,
+    NULL
+);
+
 
 ----------------------- Criação de ESTATISTICA DE PARTIDA ---------------------
 INSERT INTO ESTAT_PARTIDA (
