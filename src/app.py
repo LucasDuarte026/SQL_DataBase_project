@@ -1,27 +1,32 @@
 import oracledb
 
+# Configuração da conexão
+username = ""
+password = ""
+dsn = ""
 
-
-# Conectando ao banco
 try:
-    # Modo thin (sem Oracle Client obrigatório)
-    oracledb.init_oracle_client() 
+    # Inicializar o cliente Oracle
+    oracledb.init_oracle_client(lib_dir="C:/oracle/instant_client")
+
+    # Tentativa de conexão ao banco
     connection = oracledb.connect(user=username, password=password, dsn=dsn)
 
-    # Cursor para executar comandos SQL
+    # Criar cursor e executar uma consulta
     cursor = connection.cursor()
-
-    # Exemplo de execução de consulta
-    query = "SELECT * FROM JOGADOR"
+    query = "SELECT * FROM TIME"  # Altere para a tabela ou consulta que deseja testar
     cursor.execute(query)
 
-    # Iterando nos resultados
+    # Iterar pelos resultados e exibi-los
+    print("Resultados da consulta:")
     for row in cursor:
         print(row)
 
-    # Fechar o cursor e conexão
+    # Fechar o cursor e a conexão
     cursor.close()
     connection.close()
 
 except oracledb.Error as e:
     print("Erro ao conectar no Oracle Database:", e)
+except Exception as e:
+    print("Erro inesperado:", e)
