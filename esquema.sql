@@ -136,7 +136,7 @@ CREATE TABLE VIDEO (
 
 ----------------------- Criação de EXAME GENÉRICO ---------------------
 CREATE TABLE EXAME (
-    PROTOCOLO CHAR (13) NOT NULL, -- PROTOCOLO no formato XXXXXXXXX-YYY para armazenar unicamente o protocolo -  9 letras seguidas de 3 digitos numéricos
+    PROTOCOLO CHAR (13) NOT NULL, -- PROTOCOLO no formato XXXXXXXXX-YYY para armazenar unicamente o protocolo -  9 letras MAIUSCULAS seguidas de 3 digitos numéricos
     DATA_HORA DATE NOT NULL, -- DATA E HORA DO EXAME
     MEDICO CHAR (14) NOT NULL, -- 11 dígitos para o cpf e 4 para ponto e hífen
     ATLETA CHAR (14) NOT NULL, -- 11 dígitos para o cpf e 4 para ponto e hífen
