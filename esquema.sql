@@ -51,7 +51,7 @@ CREATE TABLE TIME (
     CONSTRAINT CK_UNIQUE_TIME UNIQUE (CPF_TREINADOR) , -- Garantir chave secundária
     CONSTRAINT PK_TIME PRIMARY KEY (SIGLA_TIME, SIGLA_ESPORTE) , -- Chave primária da tabela
     CONSTRAINT FK_TIME_ESPORTE FOREIGN KEY (SIGLA_ESPORTE) REFERENCES ESPORTE (SIGLA_ESPORTE) ON DELETE CASCADE, -- chave estrangeira para o esporte. Caso seja excluido, o time não faz mais sentido estar na base
-    CONSTRAINT FK_TIME_TREINADOR FOREIGN KEY (CPF_TREINADOR) REFERENCES TREINADOR (CPF) ON DELETE SET NULL -- chave estrangeira para o treinador. Caso o treinador saia, o time deve continuar
+    CONSTRAINT FK_TIME_TREINADOR FOREIGN KEY (CPF_TREINADOR) REFERENCES TREINADOR (CPF)  -- chave estrangeira para o treinador. Caso o treinador saia, o time deve continuar
 );
 
 ----------------------- Criação de ATLETA ---------------------
@@ -82,7 +82,7 @@ CREATE TABLE PARTIDA (
     NOME VARCHAR2 (100) NOT NULL, -- NOME DESCRITIVO DA PARTIDA (AMISTOSO ENTRE SÃO PAULO E PALMEIRAS)
     SIGLA_ESPORTE CHAR (3) NOT NULL, -- nome do esporte o qual joga o time
     CONSTRAINT PK_PAR PRIMARY KEY (DATA, LOCAL) , --  chave primária desta tabela
-    CONSTRAINT FK_PAR_ESPORTE FOREIGN KEY (SIGLA_ESPORTE) REFERENCES ESPORTE (SIGLA_ESPORTE) ON DELETE SET NULL -- FOI ESCOLHIDO não usar CASCADE POIS é interessante manter os dados de histórioco mesmo que uma tupla de esporte seja excluida
+    CONSTRAINT FK_PAR_ESPORTE FOREIGN KEY (SIGLA_ESPORTE) REFERENCES ESPORTE (SIGLA_ESPORTE) -- FOI ESCOLHIDO não usar CASCADE POIS é interessante manter os dados de histórioco mesmo que uma tupla de esporte seja excluida
 );
 
 ----------------------- Criação de ESTATISTICA DE PARTIDA ---------------------
@@ -102,7 +102,7 @@ CREATE TABLE DISPUTA (
     EST_DATA DATE NOT NULL, -- Chave estrangeira para DATA E HORA DA PARTIDA
     EST_LOCAL VARCHAR2 (50) NOT NULL, -- Chave estrangeira para LOCAL
     CONSTRAINT PK_DIPUTA PRIMARY KEY (SIGLA_TIME, SIGLA_ESPORTE, EST_DATA, EST_LOCAL) , -- chave primária
-    CONSTRAINT FK_DISPUTA_TIME FOREIGN KEY (SIGLA_TIME, SIGLA_ESPORTE) REFERENCES TIME (SIGLA_TIME, SIGLA_ESPORTE) ON DELETE SET NULL, -- Time faz sentido set null por se querer guardar histórico
+    CONSTRAINT FK_DISPUTA_TIME FOREIGN KEY (SIGLA_TIME, SIGLA_ESPORTE) REFERENCES TIME (SIGLA_TIME, SIGLA_ESPORTE), -- Time faz sentido set null por se querer guardar histórico
     CONSTRAINT FK_DISPUTA_DATA FOREIGN KEY (EST_DATA, EST_LOCAL) REFERENCES PARTIDA (DATA, LOCAL) ON DELETE CASCADE -- Aqui já não faz mais sentido guardar caso a partida em si tenha sido excluida
 );
 
@@ -114,14 +114,14 @@ CREATE TABLE ESTAT_ATLETA_PARTIDA (
     CRITERIO VARCHAR (20) NOT NULL, -- nome da estatística avaliada àquela partida
     VALOR NUMBER (4) NOT NULL, -- Acredita-se que as estátisticas aqui sejam todas suficientes até o valor 9999
     CONSTRAINT FK_ESTAT_ATLETA_ATLETA FOREIGN KEY (ATLETA) REFERENCES ATLETA (CPF) ON DELETE CASCADE, -- não faz sentido guardar a estatistica de um atleta que não exista na base
-    CONSTRAINT FK_ESTAT_ATLETA_PARTIDA_DATA FOREIGN KEY (EST_DATA, EST_LOCAL) REFERENCES PARTIDA (DATA, LOCAL) ON DELETE SET NULL, -- é interessante guardar os dados do atleta, mesmo que a partida tenha sido removida
+    CONSTRAINT FK_ESTAT_ATLETA_PARTIDA_DATA FOREIGN KEY (EST_DATA, EST_LOCAL) REFERENCES PARTIDA (DATA, LOCAL), -- é interessante guardar os dados do atleta, mesmo que a partida tenha sido removida
     CONSTRAINT PK_ESTAT_ATLETA_PARTIDA PRIMARY KEY (EST_DATA, EST_LOCAL, CRITERIO) -- chave primária de estatistica atleta partida
 );
 
 ----------------------- Criação de VIDEO ---------------------
 
 CREATE TABLE VIDEO (
-    MAC_ADDRESS CHAR (11) NOT NULL, -- MAC address que segue o formato XX-XX-XX-XX-XX-XX
+    MAC_ADDRESS CHAR (17) NOT NULL, -- MAC address que segue o formato XX-XX-XX-XX-XX-XX
     DATA_HORA DATE NOT NULL, -- Data e hora de início do vídeo
     DURACAO NUMBER (2) NOT NULL, -- Acredita-se que qualquer vídeo seja menor que 1h39 minutos. Caso necessite de mais tempo, o vídeo deve ser dividido antes de entrar na Base de Dados
     DADO_VIDEO VARCHAR2 (255) , -- é um link para o video armazenado em outro repositório. Esta escolha é feita por escalabilidade, praticidade e custo em uma aplicação real
@@ -129,8 +129,8 @@ CREATE TABLE VIDEO (
     PARTIDA_DATA DATE NOT NULL, -- DATA E HORÁRIO DE COMEÇO DA PARTIDA
     PARTIDA_LOCAL VARCHAR (50) NOT NULL, -- NOME DO LOCAL ONDE SERÁ FEITA A COMPETIÇÃO DAQUELE ESPORTE
     CONSTRAINT PK_VIDEO PRIMARY KEY (MAC_ADDRESS, DATA_HORA) , -- chave Primária desta tabela
-    CONSTRAINT FK_VIDEO_ATLETA FOREIGN KEY (ATLETA) REFERENCES ATLETA (CPF) ON DELETE SET NULL, -- deseja-se que, mesmo que o atleta seja removido, o video continue existindo
-    CONSTRAINT FK_VIDEO_PARTIDAHORA FOREIGN KEY (PARTIDA_DATA, PARTIDA_LOCAL) REFERENCES PARTIDA (DATA, LOCAL) ON DELETE SET NULL, -- deseja-se que, mesmo que o partida seja removido, o video continue existindo
+    CONSTRAINT FK_VIDEO_ATLETA FOREIGN KEY (ATLETA) REFERENCES ATLETA (CPF) , -- deseja-se que, mesmo que o atleta seja removido, o video continue existindo
+    CONSTRAINT FK_VIDEO_PARTIDAHORA FOREIGN KEY (PARTIDA_DATA, PARTIDA_LOCAL) REFERENCES PARTIDA (DATA, LOCAL) , -- deseja-se que, mesmo que o partida seja removido, o video continue existindo
     CONSTRAINT CK_MAC_INSERT CHECK (REGEXP_LIKE (MAC_ADDRESS, '[0-9A-F]{2}\-[0-9A-F]{2}\-[0-9A-F]{2}\-[0-9A-F]{2}\-[0-9A-F]{2}\-[0-9A-F]{2}') ) -- formatar a entrada obrigatoriamente para ser do formato: XX-XX-XXXX-XX-XX
 );
 
@@ -188,10 +188,10 @@ CREATE TABLE GENOMA (
     ATLETA CHAR (14) NOT NULL, -- 11 dígitos para o cpf e 4 para ponto e hífen
     GENOMA VARCHAR2 (255) NOT NULL, -- LINK PARA O ENDEREÇO ONDE ESTÁ O ARQUIVO VOLUMOSO DE DADOS DO GENOMA DO ATLETA
     MAPEAMENTO CHAR (13) NOT NULL, -- PROTOCOLO no formato XXXXXXXXX-YYY para armazenar unicamente o protocolo -  9 letras seguidas de 3 digitos numéricos
-    CONSTRAINT FK_GENOMA_ATLETA FOREIGN KEY (ATLETA) REFERENCES ATLETA (CPF) ON DELETE CASCADE, -- NÃO FAZ SENTIDO EXISTIR O GENOMA DE UMA ATLETA FORA DA BASE DE DADOS
+    CONSTRAINT PK_GENOMA primary key (ATLETA), -- NÃO FAZ SENTIDO EXISTIR O GENOMA DEputa grupo heterogêneo UMA ATLETA FORA DA BASE DE DADOS
+    CONSTRAINT FK_GENOMA_ATLETA FOREIGN KEY (ATLETA) REFERENCES ATLETA (CPF) ON DELETE CASCADE, -- NÃO FAZ SENTIDO EXISTIR O GENOMA DEputa grupo heterogêneo UMA ATLETA FORA DA BASE DE DADOS
     CONSTRAINT FK_GENOMA_MAPEAMENTO FOREIGN KEY (MAPEAMENTO) REFERENCES MAPEAMENTO_GENETICO (EXAME) ON DELETE CASCADE -- NÃO FAZ SENTIDO EXISTIR O GENOMA DE UMA ATLETA FORA DA BASE DE DADOS
 );
-
 ----------------------- Criação de IMAGEM ÓSSEA ---------------------
 CREATE TABLE IMAGEM_OSSEA (
     EXAME_ORTOPEDICO CHAR (13) NOT NULL, -- PROTOCOLO no formato XXXXXXXXX-YYY para armazenar unicamente o protocolo -  9 letras seguidas de 3 digitos numéricos
@@ -201,7 +201,10 @@ CREATE TABLE IMAGEM_OSSEA (
     CONSTRAINT FK_IMAGEM_OSSEA FOREIGN KEY (EXAME_ORTOPEDICO) REFERENCES ORTOPEDICO (EXAME) ON DELETE CASCADE -- NÃO FAZ SENTIDO EXISTIR O EXAME ESPECIALIZADO CARDIOLÓGICO SE O EXAME ORIGINAL TIVER SIDO EXCLUÍDO
 );
 
+
+-- -- caso se queira eliminar as tabelas:
 -- -- Tabelas que dependem de outras (child tables)
+
 -- DROP TABLE ESTAT_ATLETA_PARTIDA CASCADE CONSTRAINTS;
 -- DROP TABLE DISPUTA CASCADE CONSTRAINTS;
 -- DROP TABLE ESTAT_PARTIDA CASCADE CONSTRAINTS;
@@ -212,7 +215,7 @@ CREATE TABLE IMAGEM_OSSEA (
 -- DROP TABLE PARTIDA CASCADE CONSTRAINTS;
 -- DROP TABLE ESPORTE CASCADE CONSTRAINTS;
 -- DROP TABLE TREINADOR CASCADE CONSTRAINTS;
--- -- DROP TABLE MEDICO CASCADE CONSTRAINTS;
+-- DROP TABLE MEDICO CASCADE CONSTRAINTS;
 
 -- DROP TABLE video CASCADE CONSTRAINTS;
 -- DROP TABLE EXAME CASCADE CONSTRAINTS;
