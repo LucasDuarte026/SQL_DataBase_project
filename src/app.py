@@ -2,7 +2,7 @@
 import tkinter as tk               # Biblioteca para criar interfaces gráficas
 from tkinter import messagebox     # Para exibir caixas de mensagem (ex.: erro ou informações ao usuário)
 import oracledb                    # Biblioteca para interação com o Oracle Database
-
+from datetime import datetime, timedelta
 # ============================
 # Funções Relacionadas à Interface Gráfica
 # ============================
@@ -1156,7 +1156,7 @@ def inserir_dados_no_banco(dados):
                 cursor.execute(query, (dados['cpf'], dados['id'], dados['nome'], dados['time'], dados['esporte'], dados['data'], dados['rua'], dados['numero'], dados['bairro'], dados['cep'], dados['uf']))
             elif dados['tabela'] == "partida":
                 query = """INSERT INTO PARTIDA (DATA, LOCAL, NOME, SIGLA_ESPORTE)
-                           VALUES (TO_DATE(:1, 'YYYY-MM-DD'), :2, :3, :4)"""
+                           VALUES (TO_DATE(:1, 'DD/MM/YYYY HH24:MI:SS'), :2, :3, :4)"""
                 cursor.execute(query, (dados['data'], dados['local'], dados['nome'], dados['esporte']))
             elif dados['tabela'] == "estat_partida":
                 query = """INSERT INTO ESTAT_PARTIDA (DATA, LOCAL, CRITERIO, VALOR)
@@ -1164,19 +1164,58 @@ def inserir_dados_no_banco(dados):
                 cursor.execute(query, (dados['data'], dados['local'], dados['criterio'], dados['valor']))
             elif dados['tabela'] == "disputa":
                 query = """INSERT INTO DISPUTA (SIGLA_TIME, SIGLA_ESPORTE, EST_DATA, EST_LOCAL)
-                           VALUES (TO_DATE(:1, 'YYYY-MM-DD'), :2, TO_DATE(:3, 'YYYY-MM-DD'), :4)"""
+                           VALUES (:1, :2, TO_DATE(:3, 'DD/MM/YYYY HH24:MI:SS'), :4)"""
                 cursor.execute(query, (dados['time'], dados['esporte'], dados['data'], dados['local']))
             elif dados['tabela'] == "estat_atleta_partida":
                 query = """INSERT INTO ESTAT_ATLETA_PARTIDA (ATLETA, EST_DATA, EST_LOCAL, CRITERIO, VALOR)
-                           VALUES (:1, TO_DATE(:2, 'YYYY-MM-DD'), :3, :4, :5)"""
+                           VALUES (:1, TO_DATE(:2, 'DD/MM/YYYY HH24:MI:SS'), :3, :4, :5)"""
                 cursor.execute(query, (dados['atleta'], dados['data'], dados['local'], dados['criterio'], dados['valor']))
             elif dados['tabela'] == "video":
-                query = """INSERT INTO VIDEO (MAC_ADDRESS, DATA_HORA, DURACAO, DADO_VIDEO, ATLETA, PARTIDA_DATA, PARTIDA_LOCAL)
-                           VALUES (:1, TO_DATE(:2, 'YYYY-MM-DD'), :3, :4, :5, TO_DATE(:6, 'YYYY-MM-DD'), :7)"""
-                cursor.execute(query, (dados['mac'], dados['data'], dados['duracao'], dados['dado'], dados['atleta'], dados['pdata'], dados['plocal']))
+                # Para o caso do vídeo, temos de evitar sobreposição de um vídeo novo começar no meio de outro video
+                # Primeiro, cria-se uma consulta SQL para buscar as gravações de vídeo existentes para o mesmo MAC_ADDRESS,
+                # data da partida e local da partida. O objetivo é identificar se o novo vídeo se sobrepõe a gravações existentes.
+                query_lista_gravacoes = """
+                    SELECT V.DATA_HORA, V.DATA_HORA + (V.DURACAO/86400) AS FIM
+                    FROM VIDEO V
+                    WHERE V.MAC_ADDRESS = :1
+                    AND V.PARTIDA_DATA = TO_DATE(:2, 'DD/MM/YYYY HH24:MI:SS')
+                    AND V.PARTIDA_LOCAL = :3
+                """
+                
+                cursor.execute(query_lista_gravacoes, (dados['mac'], dados['pdata'], dados['plocal']))
+                
+                # Obtém todos os resultados da consulta (todas as gravações que correspondem ao MAC_ADDRESS, 
+                # data e local fornecidos).
+                resultados = cursor.fetchall()
+                
+                # Converte a data e hora do novo vídeo para um objeto datetime, que será comparado com as gravações existentes.
+                data_novo_video = datetime.strptime(dados['data'], '%d/%m/%Y %H:%M:%S')
+                
+                # Calcula o horário de fim do novo vídeo com base na duração fornecida (em segundos).
+                fim_novo_video = data_novo_video + timedelta(seconds=int(dados['duracao']))
+                
+                # Itera sobre os resultados das gravações existentes para verificar se o novo vídeo se sobrepõe a alguma delas.
+                for registro in resultados:
+                    data_inicio_gravacao = registro[0]
+                    data_fim_gravacao = registro[1]
+                    
+                    # Verifica se o novo vídeo se sobrepõe a uma gravação existente. A condição é verdadeira se o início
+                    # do novo vídeo for antes do fim da gravação existente e o fim do novo vídeo for depois do início da gravação.
+                    if (data_novo_video < data_fim_gravacao and fim_novo_video > data_inicio_gravacao):
+                        # Se houver sobreposição, lança uma exceção para impedir a inserção do novo vídeo.
+                        raise ValueError("Sobreposição de vídeo detectada! Não é possível inserir.")
+                
+                # Se não houver sobreposição, o novo vídeo pode ser inserido no banco de dados.
+                query_insercao = """INSERT INTO VIDEO (MAC_ADDRESS, DATA_HORA, DURACAO, DADO_VIDEO, ATLETA, PARTIDA_DATA, PARTIDA_LOCAL)
+                                    VALUES (:1, TO_DATE(:2, 'DD/MM/YYYY HH24:MI:SS'), :3, :4, :5, TO_DATE(:6, 'DD/MM/YYYY HH24:MI:SS'), :7)"""
+                
+                # Executa a inserção do novo vídeo na tabela "VIDEO" usando os dados fornecidos no dicionário 'dados'.
+                cursor.execute(query_insercao, (dados['mac'], dados['data'], dados['duracao'], dados['dado'], dados['atleta'], dados['pdata'], dados['plocal']))
+
+
             elif dados['tabela'] == "exame":
                 query = """INSERT INTO EXAME (PROTOCOLO, DATA_HORA, MEDICO, ATLETA, TIPO, NIVEL_OXIGENIO, PRESSAO_ATELTA, TEMPERATURA_ATLETA)
-                           VALUES (:1, TO_DATE(:2, 'YYYY-MM-DD'), :3, :4, :5, :6, :7, :8)"""
+                           VALUES (:1, TO_DATE(:2, 'DD/MM/YYYY HH24:MI:SS'), :3, :4, :5, :6, :7, :8)"""
                 cursor.execute(query, (dados['protocolo'], dados['data'], dados['medico'], dados['atleta'], dados['tipo'], dados['nivelO'], dados['pressao'], dados['temp']))
             elif dados['tabela'] == "ortopedico":
                 query = """INSERT INTO ORTOPEDICO (EXAME)
@@ -1218,14 +1257,14 @@ def inserir_dados_no_banco(dados):
         messagebox.showerror("Erro", f"Erro ao inserir dados no banco: {e}")
         connection.rollback()
 
-####### PRECISA REFAZER ESSA FUNCAO E ADAPTAR OS COMENTARIOS
 # Função para Exibir a Tela de Seleção de Esporte
 #
 # Descrição:
 # A função `exibir_selecao` tem como objetivo exibir uma interface gráfica com Tkinter que permite ao usuário
 # consultar jogadores registrados em um esporte específico. O usuário insere o nome do esporte em um campo de 
 # texto, e ao clicar no botão "Pesquisar", a função consulta o banco de dados para obter a lista de jogadores 
-# relacionados a esse esporte, juntamente com seus respectivos genomas.
+# relacionados a esse esporte, juntamente com seus respectivos genomas e videos. A busca em questão filtra
+# todos os jogadores que possuiram videos em todos os jogos em que seu time jogou
 #
 # Passos realizados pela função:
 # 1. Chama a função `limpar_tela()` para limpar a interface antes de exibir a tela de seleção.
@@ -1235,7 +1274,7 @@ def inserir_dados_no_banco(dados):
 #    - Valida se o nome do esporte foi informado.
 #    - Conecta-se ao banco de dados Oracle e executa uma consulta SQL para buscar jogadores e seus genomas 
 #      associados ao esporte informado.
-#    - Exibe os resultados na interface.
+#    - Faz a segunda busca, utilizando exclusçao de conjunto para executar a divisão
 # 5. Caso não existam jogadores para o esporte especificado, exibe uma mensagem informando que nenhum jogador
 #    foi encontrado.
 # 6. Exibe mensagens de erro se houver falha na execução da consulta SQL ou problemas de conexão com o banco.
@@ -1245,7 +1284,7 @@ def inserir_dados_no_banco(dados):
 # Exemplo de uso:
 # Quando o usuário digita o nome de um esporte (por exemplo, "Futebol") e clica no botão "Pesquisar",
 # a função irá consultar o banco de dados e exibir a lista de jogadores que praticam esse esporte, juntamente
-# com seus respectivos genomas (se cadastrados).
+# com seus respectivos genomas (se cadastrados) e videos.
 #
 # Observações:
 # - A função usa o módulo `tkinter` para construir a interface gráfica.
@@ -1282,13 +1321,28 @@ def exibir_selecao():
                 # Cria um cursor para executar as consultas no banco
                 cursor = connection.cursor()
 
-                # Consulta SQL para buscar jogadores e seus genomas associados ao esporte informado
+                # Consulta SQL para buscar jogadores e seus genomas e videos associados ao esporte informado, se cumporir a requisição
                 query = """
-                    SELECT A.CPF, G.GENOMA
+                    SELECT A.CPF, G.GENOMA, V.DADO_VIDEO
                     FROM ATLETA A
                     LEFT JOIN GENOMA G ON A.CPF = G.ATLETA
                     JOIN ESPORTE E ON A.ATL_SIGLA_ESPORTE = E.SIGLA_ESPORTE
-                    WHERE E.NOME = :esporte_nome
+                    LEFT JOIN VIDEO V ON A.CPF = V.ATLETA
+                    WHERE E.NOME = :esporte_nome 
+                    AND NOT EXISTS (
+                        SELECT D.EST_DATA, D.EST_LOCAL
+                        FROM DISPUTA D
+                        JOIN VIDEO V2 ON D.EST_DATA = V2.PARTIDA_DATA AND D.EST_LOCAL = V2.PARTIDA_LOCAL
+                        JOIN TIME T ON T.SIGLA_TIME = D.SIGLA_TIME AND T.SIGLA_ESPORTE = D.SIGLA_ESPORTE
+                        WHERE T.SIGLA_TIME = A.ATL_SIGLA_TIME
+                        AND T.SIGLA_ESPORTE = A.ATL_SIGLA_ESPORTE
+                        MINUS
+                        SELECT D.EST_DATA, D.EST_LOCAL
+                        FROM DISPUTA D
+                        JOIN TIME T ON T.SIGLA_TIME = D.SIGLA_TIME AND T.SIGLA_ESPORTE = D.SIGLA_ESPORTE
+                        WHERE T.SIGLA_TIME = A.ATL_SIGLA_TIME
+                        AND T.SIGLA_ESPORTE = A.ATL_SIGLA_ESPORTE
+                    )
                 """
 
                 # Executa a consulta passando o nome do esporte como parâmetro
