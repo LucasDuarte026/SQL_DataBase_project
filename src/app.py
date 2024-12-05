@@ -3,40 +3,6 @@ import tkinter as tk               # Biblioteca para criar interfaces gráficas
 from tkinter import messagebox     # Para exibir caixas de mensagem (ex.: erro ou informações ao usuário)
 import oracledb                    # Biblioteca para interação com o Oracle Database
 
-
-# ============================
-# Função para Conectar ao Banco de Dados Oracle
-# ============================
-# A função a seguir estabelece uma conexão com o banco de dados Oracle usando a biblioteca 'oracledb'.
-# Ela utiliza credenciais fixas (usuário, senha) e o Data Source Name (DSN) para a conexão.
-# A função é projetada para:
-# 1. Tentar conectar ao banco de dados usando o modo Thin Client.
-# 2. Desabilitar o autocommit para permitir controle manual das transações.
-# 3. Retornar a conexão bem-sucedida, ou exibir uma mensagem de erro em caso de falha.
-#
-# Retorno:
-# - Retorna o objeto de conexão se bem-sucedido, ou None caso ocorra um erro.
-# ============================
-
-def conectar_oracle():
-    # Dados de autenticação (usuário e senha) e DSN (Data Source Name) do banco
-    username = ""
-    password = ""
-    dsn = ""
-    
-    try:
-        # Tentativa de conexão com o banco de dados Oracle utilizando o modo Thin Client
-        connection = oracledb.connect(user=username, password=password, dsn=dsn)
-        connection.autocommit = False  # Desabilita o autocommit para controle manual das transações
-        return connection  # Retorna a conexão bem-sucedida
-        
-    except oracledb.Error as e:
-        # Exibe uma caixa de mensagem de erro caso a conexão falhe
-        messagebox.showerror("Erro de Conexão", f"Erro ao conectar ao Oracle Database: {e}")
-        return None  # Retorna None caso ocorra um erro na conexão
-
-
-
 # ============================
 # Funções Relacionadas à Interface Gráfica
 # ============================
@@ -1360,6 +1326,37 @@ def exibir_selecao():
     # Criação do botão "Pesquisar", que chama a função de consulta ao banco de dados
     button_pesquisar = tk.Button(root, text="Pesquisar", command=consultar_jogadores_por_esporte)
     button_pesquisar.grid(row=1, column=0, columnspan=2, pady=10)
+
+# ============================
+# Função para Conectar ao Banco de Dados Oracle
+# ============================
+# A função a seguir estabelece uma conexão com o banco de dados Oracle usando a biblioteca 'oracledb'.
+# Ela utiliza credenciais fixas (usuário, senha) e o Data Source Name (DSN) para a conexão.
+# A função é projetada para:
+# 1. Tentar conectar ao banco de dados usando o modo Thin Client.
+# 2. Desabilitar o autocommit para permitir controle manual das transações.
+# 3. Retornar a conexão bem-sucedida, ou exibir uma mensagem de erro em caso de falha.
+#
+# Retorno:
+# - Retorna o objeto de conexão se bem-sucedido, ou None caso ocorra um erro.
+# ============================
+
+def conectar_oracle():
+    # Dados de autenticação (usuário e senha) e DSN (Data Source Name) do banco
+    username = ""
+    password = ""
+    dsn = ""
+    
+    try:
+        # Tentativa de conexão com o banco de dados Oracle utilizando o modo Thin Client
+        connection = oracledb.connect(user=username, password=password, dsn=dsn)
+        connection.autocommit = False  # Desabilita o autocommit para controle manual das transações
+        return connection  # Retorna a conexão bem-sucedida
+        
+    except oracledb.Error as e:
+        # Exibe uma caixa de mensagem de erro caso a conexão falhe
+        messagebox.showerror("Erro de Conexão", f"Erro ao conectar ao Oracle Database: {e}")
+        return None  # Retorna None caso ocorra um erro na conexão
 
 # Criando a janela principal da interface gráfica
 root = tk.Tk()
