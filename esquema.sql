@@ -136,19 +136,20 @@ CREATE TABLE VIDEO (
 
 ----------------------- Criação de EXAME GENÉRICO ---------------------
 CREATE TABLE EXAME (
-    PROTOCOLO CHAR (13) NOT NULL, -- PROTOCOLO no formato XXXXXXXXX-YYY para armazenar unicamente o protocolo -  9 letras seguidas de 3 digitos numéricos
+    PROTOCOLO CHAR (13) NOT NULL, -- PROTOCOLO no formato XXXXXXXXX-YYY para armazenar unicamente o protocolo -  9 letras MAIUSCULAS seguidas de 3 digitos numéricos
     DATA_HORA DATE NOT NULL, -- DATA E HORA DO EXAME
     MEDICO CHAR (14) NOT NULL, -- 11 dígitos para o cpf e 4 para ponto e hífen
     ATLETA CHAR (14) NOT NULL, -- 11 dígitos para o cpf e 4 para ponto e hífen
     TIPO CHAR (1) NOT NULL, -- VALOR CHAR para identificar o tipo do exame em si
     NIVEL_OXIGENIO NUMBER (2) , -- (pode ser nulo) NIVEL DE OXIGÊNIO EM PORCENTAGEM 0 - 99%
     PRESSAO_ATLETA CHAR (7) , -- (pode ser nulo) 2 valores, uma para a pressão baixa e outro para a pressão alta Pressão Arterial Diastólica (PAD) e Pressão Arterial Sistólica (PAS) (XXX-YYY)
-    TEMPERATURA_ATLETA NUMBER (2) , -- (pode ser nulo) 0 a 99 é suficiente para armazenar a o valor em ºC de temperatura do cidadão
+    TEMPERATURA_ATLETA char (4) , -- (pode ser nulo) 0.0 a 99.9 é suficiente para armazenar a o valor em ºC de temperatura do cidadão
     CONSTRAINT PK_EXAME PRIMARY KEY (PROTOCOLO) , -- CHAVE PRIMÁRIA DA TABELA
     CONSTRAINT SK_EXAME UNIQUE (DATA_HORA, MEDICO, ATLETA) , -- CHAVE SECUNDÁRIA DA TABELA
     CONSTRAINT CK_EXAME_PROTOCOLO CHECK (REGEXP_LIKE (PROTOCOLO, '[a-zA-Z]{9}\-[0-9]{3}') ) , -- PROTOCOLO DO EXAME SEGUE UM PADRÃO DE IDENTITFICAÇÃO DE 9 LETRAS E 3 DÍGITOS
     CONSTRAINT CK_EXAME_TIPO CHECK (TIPO IN ('S', 'N', 'O', 'C', 'M') ) , -- EXAME PODE SER DE 5 TIPOS S: simples,'N'- NEUROLÓGICO, 'O' - ORTOPÉDICO, 'C' - Cardiaco, 'M' - mapeamento genético
-    CONSTRAINT CK_EXAME_PRESSAO CHECK (REGEXP_LIKE (PRESSAO_ATLETA, '[0-9]{3}\-[0-9]{3}') ) -- Pressão tem que seguir o formato XXX-YYY (PAD-PAS)
+    CONSTRAINT CK_EXAME_PRESSAO CHECK (REGEXP_LIKE (PRESSAO_ATLETA, '[0-9]{3}\/[0-9]{3}') ), -- Pressão tem que seguir o formato XXX-YYY (PAD-PAS)
+    CONSTRAINT CK_EXAME_TEMP CHECK (REGEXP_LIKE (TEMPERATURA_ATLETA, '[0-9]{2}\.[0-9]{1}') ) -- TEMPERATURA tem que seguir o formato XX.X
 );
 
 ----------------------- Criação de EXAME ESPECIALIZADO ORTOPÉDICO ---------------------
@@ -211,7 +212,7 @@ CREATE TABLE IMAGEM_OSSEA (
 -- DROP TABLE PARTIDA CASCADE CONSTRAINTS;
 -- DROP TABLE ESPORTE CASCADE CONSTRAINTS;
 -- DROP TABLE TREINADOR CASCADE CONSTRAINTS;
--- DROP TABLE MEDICO CASCADE CONSTRAINTS;
+-- -- DROP TABLE MEDICO CASCADE CONSTRAINTS;
 
 -- DROP TABLE video CASCADE CONSTRAINTS;
 -- DROP TABLE EXAME CASCADE CONSTRAINTS;
