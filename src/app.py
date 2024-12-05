@@ -2,6 +2,11 @@ import tkinter as tk
 from tkinter import messagebox
 import oracledb
 
+# Função para realizar a conexão com o banco de dados
+def conectar_oracle():
+    username = ""
+    password = ""
+    dsn = ""
 
     try:
         # Conexão no modo Thin Client
