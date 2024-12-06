@@ -1325,9 +1325,9 @@ def exibir_selecao():
                 query = """
                     SELECT A.NOME, G.GENOMA, V.DADO_VIDEO
                     FROM ATLETA A
+                    JOIN ESPORTE E ON A.ATL_SIGLA_ESPORTE = E.SIGLA_ESPORTE 
+                    JOIN VIDEO V ON A.CPF = V.ATLETA
                     LEFT JOIN GENOMA G ON A.CPF = G.ATLETA
-                    JOIN ESPORTE E ON A.ATL_SIGLA_ESPORTE = E.SIGLA_ESPORTE
-                    LEFT JOIN VIDEO V ON A.CPF = V.ATLETA
                     WHERE E.NOME = :esporte_nome 
                     AND V.DADO_VIDEO IS NOT NULL
                     AND NOT EXISTS (
@@ -1335,14 +1335,12 @@ def exibir_selecao():
                         FROM DISPUTA D
                         JOIN TIME T ON T.SIGLA_TIME = D.SIGLA_TIME AND T.SIGLA_ESPORTE = D.SIGLA_ESPORTE
                         WHERE T.SIGLA_TIME = A.ATL_SIGLA_TIME
-                        AND T.SIGLA_ESPORTE = A.ATL_SIGLA_ESPORTE
                         MINUS
                         SELECT D.EST_DATA, D.EST_LOCAL
                         FROM DISPUTA D
                         JOIN VIDEO V2 ON D.EST_DATA = V2.PARTIDA_DATA AND D.EST_LOCAL = V2.PARTIDA_LOCAL
                         JOIN TIME T ON T.SIGLA_TIME = D.SIGLA_TIME AND T.SIGLA_ESPORTE = D.SIGLA_ESPORTE
                         WHERE T.SIGLA_TIME = A.ATL_SIGLA_TIME
-                        AND T.SIGLA_ESPORTE = A.ATL_SIGLA_ESPORTE
                     )
                 """
 
@@ -1411,9 +1409,9 @@ def exibir_selecao():
 
 def conectar_oracle():
     # Dados de autenticação (usuário e senha) e DSN (Data Source Name) do banco
-    username = ""
-    password = ""
-    dsn = ""
+    username = "a11734490"
+    password = "a11734490"
+    dsn = "orclgrad1.icmc.usp.br:1521/pdb_elaine.icmc.usp.br"
     
     try:
         # Tentativa de conexão com o banco de dados Oracle utilizando o modo Thin Client
