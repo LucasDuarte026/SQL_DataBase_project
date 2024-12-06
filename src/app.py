@@ -1333,13 +1333,13 @@ def exibir_selecao():
                     AND NOT EXISTS (
                         SELECT D.EST_DATA, D.EST_LOCAL
                         FROM DISPUTA D
-                        JOIN VIDEO V2 ON D.EST_DATA = V2.PARTIDA_DATA AND D.EST_LOCAL = V2.PARTIDA_LOCAL
                         JOIN TIME T ON T.SIGLA_TIME = D.SIGLA_TIME AND T.SIGLA_ESPORTE = D.SIGLA_ESPORTE
                         WHERE T.SIGLA_TIME = A.ATL_SIGLA_TIME
                         AND T.SIGLA_ESPORTE = A.ATL_SIGLA_ESPORTE
                         MINUS
                         SELECT D.EST_DATA, D.EST_LOCAL
                         FROM DISPUTA D
+                        JOIN VIDEO V2 ON D.EST_DATA = V2.PARTIDA_DATA AND D.EST_LOCAL = V2.PARTIDA_LOCAL
                         JOIN TIME T ON T.SIGLA_TIME = D.SIGLA_TIME AND T.SIGLA_ESPORTE = D.SIGLA_ESPORTE
                         WHERE T.SIGLA_TIME = A.ATL_SIGLA_TIME
                         AND T.SIGLA_ESPORTE = A.ATL_SIGLA_ESPORTE
