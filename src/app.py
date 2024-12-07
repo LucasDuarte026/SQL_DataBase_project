@@ -849,7 +849,6 @@ def criar_formulario_atleta():
 
     # Campos para armazenar os valores inseridos pelo usuário
     entry_cpf = tk.Entry(root)  # Campo para o CPF do atleta
-    entry_id = tk.Entry(root)  # Campo para o ID do atleta
     entry_nome = tk.Entry(root)  # Campo para o nome completo do atleta
     entry_esporte = tk.Entry(root)  # Campo para a sigla do esporte praticado pelo atleta
     entry_time = tk.Entry(root)  # Campo para a sigla do time do atleta
@@ -867,9 +866,6 @@ def criar_formulario_atleta():
     label_cpf.grid(row=0, column=0, padx=20, pady=5)
     entry_cpf.grid(row=1, column=0, padx=20, pady=5)
 
-    label_id = tk.Label(root, text="ID (5 dígitos):")
-    label_id.grid(row=2, column=0, padx=20, pady=5)
-    entry_id.grid(row=3, column=0, padx=20, pady=5)
 
     label_nome = tk.Label(root, text="Nome:")
     label_nome.grid(row=4, column=0, padx=20, pady=5)
@@ -884,8 +880,8 @@ def criar_formulario_atleta():
     entry_time.grid(row=9, column=0, padx=20, pady=5)
 
     label_data = tk.Label(root, text="Data de Nascimento:")
-    label_data.grid(row=10, column=0, padx=20, pady=5)
-    entry_data.grid(row=11, column=0, padx=20, pady=5)
+    label_data.grid(row=2, column=0, padx=20, pady=5)
+    entry_data.grid(row=3, column=0, padx=20, pady=5)
 
     # Coluna 2: Campos de endereço do atleta
     label_rua = tk.Label(root, text="Rua:")
@@ -916,7 +912,6 @@ def criar_formulario_atleta():
         dados = {
             'tabela': 'atleta',  # Identificador da tabela no banco de dados
             'cpf': entry_cpf.get().strip().upper(),  # CPF do atleta
-            'id': entry_id.get().strip().upper(),  # ID do atleta
             'esporte': entry_esporte.get().strip().upper(),  # Sigla do esporte
             'time': entry_time.get().strip().upper(),  # Sigla do time
             'nome': entry_nome.get().strip().upper(),  # Nome completo do atleta
@@ -1136,11 +1131,11 @@ def inserir_dados_no_banco(dados):
             # Dependendo da tabela informada nos dados, a inserção SQL será adaptada
             if dados['tabela'] == "medico":
                 query = """INSERT INTO MEDICO (CPF, CRM, NOME, DATA, RUA, NUMERO, BAIRRO, CEP, UF)
-                           VALUES (:1, :2, :3, TO_DATE(:4, 'YYYY-MM-DD'), :5, :6, :7, :8, :9)"""
+                           VALUES (:1, :2, :3, TO_DATE(:4, 'DD-MM-YYYY'), :5, :6, :7, :8, :9)"""
                 cursor.execute(query, (dados['cpf'], dados['crm'], dados['nome'], dados['data'], dados['rua'], dados['numero'], dados['bairro'], dados['cep'], dados['uf']))
             elif dados['tabela'] == "treinador":
                 query = """INSERT INTO TREINADOR (CPF, CREF, NOME, DATA, RUA, NUMERO, BAIRRO, CEP, UF)
-                           VALUES (:1, :2, :3, TO_DATE(:4, 'YYYY-MM-DD'), :5, :6, :7, :8, :9)"""
+                           VALUES (:1, :2, :3, TO_DATE(:4, 'DD-MM-YYYY'), :5, :6, :7, :8, :9)"""
                 cursor.execute(query, (dados['cpf'], dados['cref'], dados['nome'], dados['data'], dados['rua'], dados['numero'], dados['bairro'], dados['cep'], dados['uf']))
             elif dados['tabela'] == "esporte":
                 query = """INSERT INTO ESPORTE (SIGLA_ESPORTE, NOME, QUANT_TIME_POR_JOGO)
@@ -1151,18 +1146,40 @@ def inserir_dados_no_banco(dados):
                            VALUES (:1, :2, :3, :4)"""
                 cursor.execute(query, (dados['sigla'], dados['esporte'], dados['nome'], dados['treinador']))
             elif dados['tabela'] == "atleta":
-                query = """INSERT INTO ATLETA (CPF, ID_ATLETA, NOME, ATL_SIGLA_TIME, ATL_SIGLA_ESPORTE, DATA, RUA, NUMERO, BAIRRO, CEP, UF)
-                           VALUES (:1, :2, :3, :4, :5, TO_DATE(:6, 'YYYY-MM-DD'), :7, :8, :9, :10, :11)"""
-                cursor.execute(query, (dados['cpf'], dados['id'], dados['nome'], dados['time'], dados['esporte'], dados['data'], dados['rua'], dados['numero'], dados['bairro'], dados['cep'], dados['uf']))
+                query = """INSERT INTO ATLETA (CPF, NOME, ATL_SIGLA_TIME, ATL_SIGLA_ESPORTE, DATA, RUA, NUMERO, BAIRRO, CEP, UF)
+                           VALUES (:1, :2, :3, :4, :5, TO_DATE(:6, 'DD-MM-YYYY'), :7, :8, :9, :10, :11)"""
+                cursor.execute(query, (dados['cpf'], dados['nome'], dados['time'], dados['esporte'], dados['data'], dados['rua'], dados['numero'], dados['bairro'], dados['cep'], dados['uf']))
             elif dados['tabela'] == "partida":
                 query = """INSERT INTO PARTIDA (DATA, LOCAL, NOME, SIGLA_ESPORTE)
                            VALUES (TO_DATE(:1, 'DD/MM/YYYY HH24:MI:SS'), :2, :3, :4)"""
                 cursor.execute(query, (dados['data'], dados['local'], dados['nome'], dados['esporte']))
             elif dados['tabela'] == "estat_partida":
                 query = """INSERT INTO ESTAT_PARTIDA (DATA, LOCAL, CRITERIO, VALOR)
-                           VALUES (TO_DATE(:1, 'YYYY-MM-DD'), :2, :3, :4)"""
+                           VALUES (TO_DATE(:1, 'DD/MM/YYYY HH24:MI:SS'), :2, :3, :4)"""
                 cursor.execute(query, (dados['data'], dados['local'], dados['criterio'], dados['valor']))
             elif dados['tabela'] == "disputa":
+                # Consulta 1: Número de disputas
+                query_numdisputas = """
+                    SELECT COUNT(*)
+                    FROM DISPUTA D
+                    WHERE D.EST_LOCAL = :1 AND D.EST_DATA = TO_DATE(:2, 'DD/MM/YYYY HH24:MI:SS')
+                """
+                cursor.execute(query_numdisputas, (dados['local'], dados['data']))
+                num_disputas = cursor.fetchone()[0]  # Captura o primeiro valor da linha retornada
+
+                # Consulta 2: Quantidade de times por jogo
+                query_qnt = """
+                    SELECT E.QUANT_TIME_POR_JOGO
+                    FROM ESPORTE E
+                    WHERE E.SIGLA_ESPORTE = :1
+                """
+                cursor.execute(query_qnt, (dados['esporte'],))  # Note a vírgula no final para criar uma tupla
+                quant_time_por_jogo = cursor.fetchone()[0]  # Captura o primeiro valor da linha retornada
+
+
+                if (num_disputas >= quant_time_por_jogo):
+                    raise ValueError("Número máximo de times associados à disputa!")
+                
                 query = """INSERT INTO DISPUTA (SIGLA_TIME, SIGLA_ESPORTE, EST_DATA, EST_LOCAL)
                            VALUES (:1, :2, TO_DATE(:3, 'DD/MM/YYYY HH24:MI:SS'), :4)"""
                 cursor.execute(query, (dados['time'], dados['esporte'], dados['data'], dados['local']))
