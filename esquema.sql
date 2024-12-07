@@ -158,7 +158,7 @@ CREATE TABLE VIDEO (
     PARTIDA_DATA DATE NOT NULL, -- DATA E HORÁRIO DE COMEÇO DA PARTIDA
     PARTIDA_LOCAL VARCHAR (50) NOT NULL, -- NOME DO LOCAL ONDE SERÁ FEITA A COMPETIÇÃO DAQUELE ESPORTE
     CONSTRAINT PK_VIDEO PRIMARY KEY (MAC_ADDRESS, DATA_HORA) , -- chave Primária desta tabela
-    CONSTRAINT FK_VIDEO_ATLETA FOREIGN KEY (ATLETA) REFERENCES ATLETA (CPF) , -- deseja-se que, mesmo que o atleta seja removido, o video continue existindo
+    CONSTRAINT FK_VIDEO_ATLETA FOREIGN KEY (ATLETA) REFERENCES ATLETA (CPF) ON DELETE CASCADE, -- deseja-se que, mesmo que o atleta seja removido, o video continue existindo
     CONSTRAINT FK_VIDEO_PARTIDAHORA FOREIGN KEY (PARTIDA_DATA, PARTIDA_LOCAL) REFERENCES PARTIDA (DATA, LOCAL) , -- deseja-se que, mesmo que o partida seja removido, o video continue existindo
     CONSTRAINT CK_MAC_INSERT CHECK (REGEXP_LIKE (MAC_ADDRESS, '[0-9A-F]{2}\-[0-9A-F]{2}\-[0-9A-F]{2}\-[0-9A-F]{2}\-[0-9A-F]{2}\-[0-9A-F]{2}') ) -- formatar a entrada obrigatoriamente para ser do formato: XX-XX-XXXX-XX-XX
 );
