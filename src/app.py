@@ -849,7 +849,6 @@ def criar_formulario_atleta():
 
     # Campos para armazenar os valores inseridos pelo usuário
     entry_cpf = tk.Entry(root)  # Campo para o CPF do atleta
-    entry_id = tk.Entry(root)  # Campo para o ID do atleta
     entry_nome = tk.Entry(root)  # Campo para o nome completo do atleta
     entry_esporte = tk.Entry(root)  # Campo para a sigla do esporte praticado pelo atleta
     entry_time = tk.Entry(root)  # Campo para a sigla do time do atleta
@@ -867,9 +866,6 @@ def criar_formulario_atleta():
     label_cpf.grid(row=0, column=0, padx=20, pady=5)
     entry_cpf.grid(row=1, column=0, padx=20, pady=5)
 
-    label_id = tk.Label(root, text="ID (5 dígitos):")
-    label_id.grid(row=2, column=0, padx=20, pady=5)
-    entry_id.grid(row=3, column=0, padx=20, pady=5)
 
     label_nome = tk.Label(root, text="Nome:")
     label_nome.grid(row=4, column=0, padx=20, pady=5)
@@ -884,8 +880,8 @@ def criar_formulario_atleta():
     entry_time.grid(row=9, column=0, padx=20, pady=5)
 
     label_data = tk.Label(root, text="Data de Nascimento:")
-    label_data.grid(row=10, column=0, padx=20, pady=5)
-    entry_data.grid(row=11, column=0, padx=20, pady=5)
+    label_data.grid(row=2, column=0, padx=20, pady=5)
+    entry_data.grid(row=3, column=0, padx=20, pady=5)
 
     # Coluna 2: Campos de endereço do atleta
     label_rua = tk.Label(root, text="Rua:")
@@ -916,7 +912,6 @@ def criar_formulario_atleta():
         dados = {
             'tabela': 'atleta',  # Identificador da tabela no banco de dados
             'cpf': entry_cpf.get().strip().upper(),  # CPF do atleta
-            'id': entry_id.get().strip().upper(),  # ID do atleta
             'esporte': entry_esporte.get().strip().upper(),  # Sigla do esporte
             'time': entry_time.get().strip().upper(),  # Sigla do time
             'nome': entry_nome.get().strip().upper(),  # Nome completo do atleta
@@ -1151,9 +1146,9 @@ def inserir_dados_no_banco(dados):
                            VALUES (:1, :2, :3, :4)"""
                 cursor.execute(query, (dados['sigla'], dados['esporte'], dados['nome'], dados['treinador']))
             elif dados['tabela'] == "atleta":
-                query = """INSERT INTO ATLETA (CPF, ID_ATLETA, NOME, ATL_SIGLA_TIME, ATL_SIGLA_ESPORTE, DATA, RUA, NUMERO, BAIRRO, CEP, UF)
+                query = """INSERT INTO ATLETA (CPF, NOME, ATL_SIGLA_TIME, ATL_SIGLA_ESPORTE, DATA, RUA, NUMERO, BAIRRO, CEP, UF)
                            VALUES (:1, :2, :3, :4, :5, TO_DATE(:6, 'DD-MM-YYYY'), :7, :8, :9, :10, :11)"""
-                cursor.execute(query, (dados['cpf'], dados['id'], dados['nome'], dados['time'], dados['esporte'], dados['data'], dados['rua'], dados['numero'], dados['bairro'], dados['cep'], dados['uf']))
+                cursor.execute(query, (dados['cpf'], dados['nome'], dados['time'], dados['esporte'], dados['data'], dados['rua'], dados['numero'], dados['bairro'], dados['cep'], dados['uf']))
             elif dados['tabela'] == "partida":
                 query = """INSERT INTO PARTIDA (DATA, LOCAL, NOME, SIGLA_ESPORTE)
                            VALUES (TO_DATE(:1, 'DD/MM/YYYY HH24:MI:SS'), :2, :3, :4)"""
