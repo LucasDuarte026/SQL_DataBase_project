@@ -1136,11 +1136,11 @@ def inserir_dados_no_banco(dados):
             # Dependendo da tabela informada nos dados, a inserção SQL será adaptada
             if dados['tabela'] == "medico":
                 query = """INSERT INTO MEDICO (CPF, CRM, NOME, DATA, RUA, NUMERO, BAIRRO, CEP, UF)
-                           VALUES (:1, :2, :3, TO_DATE(:4, 'YYYY-MM-DD'), :5, :6, :7, :8, :9)"""
+                           VALUES (:1, :2, :3, TO_DATE(:4, 'DD-MM-YYYY'), :5, :6, :7, :8, :9)"""
                 cursor.execute(query, (dados['cpf'], dados['crm'], dados['nome'], dados['data'], dados['rua'], dados['numero'], dados['bairro'], dados['cep'], dados['uf']))
             elif dados['tabela'] == "treinador":
                 query = """INSERT INTO TREINADOR (CPF, CREF, NOME, DATA, RUA, NUMERO, BAIRRO, CEP, UF)
-                           VALUES (:1, :2, :3, TO_DATE(:4, 'YYYY-MM-DD'), :5, :6, :7, :8, :9)"""
+                           VALUES (:1, :2, :3, TO_DATE(:4, 'DD-MM-YYYY'), :5, :6, :7, :8, :9)"""
                 cursor.execute(query, (dados['cpf'], dados['cref'], dados['nome'], dados['data'], dados['rua'], dados['numero'], dados['bairro'], dados['cep'], dados['uf']))
             elif dados['tabela'] == "esporte":
                 query = """INSERT INTO ESPORTE (SIGLA_ESPORTE, NOME, QUANT_TIME_POR_JOGO)
@@ -1152,7 +1152,7 @@ def inserir_dados_no_banco(dados):
                 cursor.execute(query, (dados['sigla'], dados['esporte'], dados['nome'], dados['treinador']))
             elif dados['tabela'] == "atleta":
                 query = """INSERT INTO ATLETA (CPF, ID_ATLETA, NOME, ATL_SIGLA_TIME, ATL_SIGLA_ESPORTE, DATA, RUA, NUMERO, BAIRRO, CEP, UF)
-                           VALUES (:1, :2, :3, :4, :5, TO_DATE(:6, 'YYYY-MM-DD'), :7, :8, :9, :10, :11)"""
+                           VALUES (:1, :2, :3, :4, :5, TO_DATE(:6, 'DD-MM-YYYY'), :7, :8, :9, :10, :11)"""
                 cursor.execute(query, (dados['cpf'], dados['id'], dados['nome'], dados['time'], dados['esporte'], dados['data'], dados['rua'], dados['numero'], dados['bairro'], dados['cep'], dados['uf']))
             elif dados['tabela'] == "partida":
                 query = """INSERT INTO PARTIDA (DATA, LOCAL, NOME, SIGLA_ESPORTE)
@@ -1160,9 +1160,31 @@ def inserir_dados_no_banco(dados):
                 cursor.execute(query, (dados['data'], dados['local'], dados['nome'], dados['esporte']))
             elif dados['tabela'] == "estat_partida":
                 query = """INSERT INTO ESTAT_PARTIDA (DATA, LOCAL, CRITERIO, VALOR)
-                           VALUES (TO_DATE(:1, 'YYYY-MM-DD'), :2, :3, :4)"""
+                           VALUES (TO_DATE(:1, 'DD/MM/YYYY HH24:MI:SS'), :2, :3, :4)"""
                 cursor.execute(query, (dados['data'], dados['local'], dados['criterio'], dados['valor']))
             elif dados['tabela'] == "disputa":
+                # Consulta 1: Número de disputas
+                query_numdisputas = """
+                    SELECT COUNT(*)
+                    FROM DISPUTA D
+                    WHERE D.EST_LOCAL = :1 AND D.EST_DATA = TO_DATE(:2, 'DD/MM/YYYY HH24:MI:SS')
+                """
+                cursor.execute(query_numdisputas, (dados['local'], dados['data']))
+                num_disputas = cursor.fetchone()[0]  # Captura o primeiro valor da linha retornada
+
+                # Consulta 2: Quantidade de times por jogo
+                query_qnt = """
+                    SELECT E.QUANT_TIME_POR_JOGO
+                    FROM ESPORTE E
+                    WHERE E.SIGLA_ESPORTE = :1
+                """
+                cursor.execute(query_qnt, (dados['esporte'],))  # Note a vírgula no final para criar uma tupla
+                quant_time_por_jogo = cursor.fetchone()[0]  # Captura o primeiro valor da linha retornada
+
+
+                if (num_disputas >= quant_time_por_jogo):
+                    raise ValueError("Número máximo de times associados à disputa!")
+                
                 query = """INSERT INTO DISPUTA (SIGLA_TIME, SIGLA_ESPORTE, EST_DATA, EST_LOCAL)
                            VALUES (:1, :2, TO_DATE(:3, 'DD/MM/YYYY HH24:MI:SS'), :4)"""
                 cursor.execute(query, (dados['time'], dados['esporte'], dados['data'], dados['local']))
