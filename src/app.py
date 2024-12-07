@@ -1307,7 +1307,7 @@ def exibir_selecao():
     def consultar_jogadores_por_esporte():
         try:
             # Obtém o nome do esporte inserido pelo usuário no campo de entrada
-            esporte_nome = entry_esporte.get()
+            esporte_nome = entry_esporte.get().strip().upper()
 
             # Valida se o nome do esporte foi informado
             if not esporte_nome:
@@ -1321,27 +1321,26 @@ def exibir_selecao():
                 # Cria um cursor para executar as consultas no banco
                 cursor = connection.cursor()
 
-                # Consulta SQL para buscar jogadores e seus genomas e videos associados ao esporte informado, se cumporir a requisição
+                # Consulta SQL para buscar jogadores e seus genomas e videos associados ao esporte informado, se cumprir a requisição
                 query = """
-                    SELECT A.CPF, G.GENOMA, V.DADO_VIDEO
+                    SELECT A.NOME, G.GENOMA, V.DADO_VIDEO
                     FROM ATLETA A
+                    JOIN ESPORTE E ON A.ATL_SIGLA_ESPORTE = E.SIGLA_ESPORTE 
+                    JOIN VIDEO V ON A.CPF = V.ATLETA
                     LEFT JOIN GENOMA G ON A.CPF = G.ATLETA
-                    JOIN ESPORTE E ON A.ATL_SIGLA_ESPORTE = E.SIGLA_ESPORTE
-                    LEFT JOIN VIDEO V ON A.CPF = V.ATLETA
                     WHERE E.NOME = :esporte_nome 
+                    AND V.DADO_VIDEO IS NOT NULL
                     AND NOT EXISTS (
+                        SELECT D.EST_DATA, D.EST_LOCAL
+                        FROM DISPUTA D
+                        JOIN TIME T ON T.SIGLA_TIME = D.SIGLA_TIME AND T.SIGLA_ESPORTE = D.SIGLA_ESPORTE
+                        WHERE T.SIGLA_TIME = A.ATL_SIGLA_TIME
+                        MINUS
                         SELECT D.EST_DATA, D.EST_LOCAL
                         FROM DISPUTA D
                         JOIN VIDEO V2 ON D.EST_DATA = V2.PARTIDA_DATA AND D.EST_LOCAL = V2.PARTIDA_LOCAL
                         JOIN TIME T ON T.SIGLA_TIME = D.SIGLA_TIME AND T.SIGLA_ESPORTE = D.SIGLA_ESPORTE
                         WHERE T.SIGLA_TIME = A.ATL_SIGLA_TIME
-                        AND T.SIGLA_ESPORTE = A.ATL_SIGLA_ESPORTE
-                        MINUS
-                        SELECT D.EST_DATA, D.EST_LOCAL
-                        FROM DISPUTA D
-                        JOIN TIME T ON T.SIGLA_TIME = D.SIGLA_TIME AND T.SIGLA_ESPORTE = D.SIGLA_ESPORTE
-                        WHERE T.SIGLA_TIME = A.ATL_SIGLA_TIME
-                        AND T.SIGLA_ESPORTE = A.ATL_SIGLA_ESPORTE
                     )
                 """
 
@@ -1351,15 +1350,20 @@ def exibir_selecao():
                 # Obtém todos os resultados da consulta
                 results = cursor.fetchall()
 
-                # Exibe os resultados na tela (no console para efeito de exemplo)
-                for row in results:
-                    jogador = row[0]  # CPF do jogador
-                    # Se o genoma estiver vazio, exibe "Genoma não cadastrado"
-                    genoma = row[1] if row[1] else "Genoma não cadastrado"
-                    print(tk.END, f"{jogador} | {genoma}")
+                # Limpa a área de texto antes de exibir novos resultados
+                text_resultados.delete(1.0, tk.END)
 
-                # Caso não haja resultados, exibe uma mensagem informando que nenhum jogador foi encontrado
-                if not results:
+                # Exibe os resultados na interface
+                if results:
+                    for row in results:
+                        jogador = row[0]  # CPF do jogador
+                        # Se o genoma estiver vazio, exibe "Genoma não cadastrado"
+                        genoma = row[1] if row[1] else "Genoma não cadastrado"
+
+                        link = row[2]
+                        # Adiciona os resultados na área de texto
+                        text_resultados.insert(tk.END, f"{jogador} | {genoma} | {link}\n")
+                else:
                     messagebox.showinfo("Resultado", "Nenhum jogador encontrado para esse esporte.")
 
                 # Fecha o cursor e a conexão com o banco de dados
@@ -1381,6 +1385,14 @@ def exibir_selecao():
     button_pesquisar = tk.Button(root, text="Pesquisar", command=consultar_jogadores_por_esporte)
     button_pesquisar.grid(row=1, column=0, columnspan=2, pady=10)
 
+    # Área de texto para exibir os resultados
+    text_resultados = tk.Text(root, width=200, height=50)
+    text_resultados.grid(row=2, column=0, columnspan=2, padx=10, pady=5)
+
+    # Botão de voltar para o menu principal
+    button_voltar = tk.Button(root, text="Voltar ao Menu Principal", command=exibir_menu)
+    button_voltar.grid(row=3, column=0, columnspan=2, pady=10)
+
 # ============================
 # Função para Conectar ao Banco de Dados Oracle
 # ============================
@@ -1397,9 +1409,9 @@ def exibir_selecao():
 
 def conectar_oracle():
     # Dados de autenticação (usuário e senha) e DSN (Data Source Name) do banco
-    username = ""
-    password = ""
-    dsn = ""
+    username = "a11734490"
+    password = "a11734490"
+    dsn = "orclgrad1.icmc.usp.br:1521/pdb_elaine.icmc.usp.br"
     
     try:
         # Tentativa de conexão com o banco de dados Oracle utilizando o modo Thin Client
