@@ -40,6 +40,7 @@ CREATE TABLE MEDICO (
     CEP VARCHAR (9) , -- CEP do endereço com um formato especifico de 8 dígitos e 1 traço
     UF CHAR (2) , -- Estado do cidadão 2 caracteres são suficiente para cobrir todos os estados brasileiros
     CONSTRAINT PK_CPF_MEDICO PRIMARY KEY (CPF) , -- declaração de chave primária para o CPF
+    CONSTRAINT SK_UNIQUE_MEDICO UNIQUE (CRM) , -- Garantir chave secundária       
     CONSTRAINT CK_CPF_MEDICO CHECK (REGEXP_LIKE (CPF, '[0-9]{3}\.[0-9]{3}\.[0-9]{3}\-[0-9]{2}') ) , -- Formatação de CPF no devido formato
     CONSTRAINT CK_CRM CHECK (REGEXP_LIKE (CRM, '[0-9]{6}') ) , -- Formatação de CRM no devido formato
     CONSTRAINT CK_CEP_MEDICO CHECK (REGEXP_LIKE (CEP, '[0-9]{5}\-[0-9]{3}') ) , -- formatação de CEP sob "XXXXX-YYY"
@@ -58,6 +59,7 @@ CREATE TABLE TREINADOR (
     CEP VARCHAR (9) , -- CEP do endereço com um formato especifico de 8 dígitos e 1 traço
     UF CHAR (2) , -- Estado do cidadão 2 caracteres são suficiente para cobrir todos os estados brasileiros
     CONSTRAINT PK_CPF_TREINADOR PRIMARY KEY (CPF) , -- declaração de chave primária para o CPF
+    CONSTRAINT SK_UNIQUE_TREINADOR UNIQUE (CREF) , -- Garantir chave secundária       
     CONSTRAINT CK_CPF_TREINADOR CHECK (REGEXP_LIKE (CPF, '[0-9]{3}\.[0-9]{3}\.[0-9]{3}\-[0-9]{2}') ) , -- Formatação de CPF no devido formato
     CONSTRAINT CK_CREF CHECK (REGEXP_LIKE (CREF, '[0-9]{6}') ) , -- Formatação de CREF no devido formato
     CONSTRAINT CK_CEP_TREINADOR CHECK (REGEXP_LIKE (CEP, '[0-9]{5}\-[0-9]{3}') ) , -- formatação de CEP sob "XXXXX-YYY"
@@ -88,8 +90,8 @@ CREATE TABLE TIME (
 CREATE TABLE ATLETA (
     CPF CHAR (14) NOT NULL, -- 11 dígitos para o cpf e 4 para ponto e hífen
     NOME VARCHAR2 (50) NOT NULL, -- Espera-se que 50 dígitos sejam suficientes para armazenar um nome
-    ATL_SIGLA_TIME CHAR (5) NOT NULL, -- chave estrangeira para a sigla de time
-    ATL_SIGLA_ESPORTE CHAR (3) NOT NULL, -- Chave estrangeira para sigla esporte de time
+    ATL_SIGLA_TIME CHAR (5), -- chave estrangeira para a sigla de time
+    ATL_SIGLA_ESPORTE CHAR (3), -- Chave estrangeira para sigla esporte de time
     DATA DATE, -- Data de nascimento do cidadão
     RUA VARCHAR2 (50) , -- nome da rua
     NUMERO NUMBER (4) , -- número da residência (0 à 9999)
