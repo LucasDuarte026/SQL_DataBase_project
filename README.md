@@ -49,7 +49,7 @@ O banco de dados foi desenvolvido para atender aos seguintes requisitos:
 ### Modelagem do Banco de Dados
 
 #### Modelo Entidade-Relacionamento (MER)
-![Modelo Entidade-Relacionamento](MER%20(Modelo%20entidade%20relacionamento).jpg)
+![Modelo Entidade-Relacionamento](MER_modeloEntidadeRelacional.jpg)
 
 O Modelo Entidade-Relacionamento (MER) é utilizado para ilustrar as relações entre os diferentes elementos de um banco de dados. Ele foi empregado para elucidar como os atletas, treinadores, médicos, partidas, exames, estatísticas e vídeos interagem dentro do contexto das Olimpíadas. Este modelo auxilia no entendimento lógico das dependências entre entidades e seus atributos, sendo um passo crucial para a estruturação de um banco de dados eficiente.
 
