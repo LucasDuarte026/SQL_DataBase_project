@@ -5,7 +5,7 @@ Este projeto é um sistema de banco de dados relacional para armazenar e gerenci
 
 - **Lucas Sales Duarte**
 - **Lucas Melo Corlette**
-- **João Alves de Almeida**
+- **João Victor de Almeida**
 - **João Ferreira Battaglini**
 
 Todos são alunos de Engenharia de Computação na **Universidade de São Paulo (USP) - Campus São Carlos**.
