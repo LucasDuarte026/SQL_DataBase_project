@@ -1,8 +1,7 @@
 # Monitoramento de Atletas Olímpicos
 
-Este projeto é um sistema de banco de dados relacional para armazenar e gerenciar informações de atletas brasileiros que competiram em uma edição das Olimpíadas. Foi desenvolvido como parte da disciplina **SCC-640 - Bases de Dados**, ministrada pela **Profa. Dra. Elaine Parros Machado de Sousa** no Instituto de Ciências Matemáticas e de Computação (ICMC) da USP (Universidade de São Paulo) -  São Carlos.
+Este projeto é um sistema de banco de dados relacional para armazenar e gerenciar informações de atletas brasileiros que competiram em uma edição das Olimpíadas. Foi desenvolvido como parte da disciplina **SCC-640 - Bases de Dados**, ministrada pela **Profa. Dra. Elaine Parros Machado de Sousa** no Instituto de Ciências Matemáticas e de Computação (ICMC) da USP (Universidade de São Paulo) - São Carlos.
 
-## Introdução
 ## Introdução
 
 O monitoramento de atletas de alto rendimento é um tema essencial para a evolução da ciência esportiva e a promoção de melhores práticas de saúde e desempenho. No contexto das Olimpíadas, a competição mais prestigiada do esporte mundial, esse monitoramento se torna ainda mais crítico, dado o elevado nível de exigência física, técnica e psicológica imposto aos competidores. Contudo, as práticas atuais enfrentam desafios significativos, como a fragmentação dos dados, a falta de integração entre diferentes fontes e a dificuldade de análise em larga escala. 
@@ -38,23 +37,6 @@ O banco de dados abrange múltiplos níveis de informação, permitindo:
 - **Relações entre equipes, atletas e treinadores**, conectando esses dados com as estatísticas de desempenho em partidas;
 - **Links para vídeos de competições**, que podem ser usados em análises técnicas e para o treinamento de modelos de IA.
 
-### Impacto Esperado
-
-Com a implementação desse banco de dados, espera-se promover:
-1. **Evolução no treinamento esportivo**: Ao integrar estatísticas e vídeos de desempenho com dados médicos, treinadores poderão personalizar regimes de treinamento.
-2. **Prevenção e acompanhamento de lesões**: Dados médicos cruzados com informações de desempenho ajudarão a identificar padrões que indicam risco de lesões.
-3. **Inovação tecnológica no esporte**: O uso de inteligência artificial permitirá análises preditivas que melhoram a tomada de decisões e promovem a saúde do atleta.
-4. **Avanço científico**: O banco de dados será um recurso valioso para pesquisadores interessados em biomecânica, genética esportiva e outros campos.
-5. **Popularização do esporte**: Tecnologias derivadas do sistema, como aplicativos de monitoramento e análise, poderão ser usadas por amadores e profissionais, incentivando a prática esportiva.
-
-Em suma, este projeto não apenas resolve os problemas estruturais de armazenamento e análise de dados, mas também contribui para o avanço da ciência do esporte, oferecendo uma plataforma integrada para otimizar o desempenho atlético e garantir a saúde e o bem-estar dos competidores.
-
-### Objetivo
-O banco de dados tem como principal objetivo integrar e centralizar dados de múltiplas fontes e formatos, proporcionando:
-- **Análise de estatísticas e desempenho** dos atletas em partidas.
-- **Armazenamento de exames médicos e genéticos** para monitoramento de saúde.
-- **Links de vídeos das partidas**, permitindo estudos detalhados e treinamento de modelos de inteligência artificial.
-
 ## Estrutura do Banco de Dados
 
 O banco de dados foi desenvolvido para atender aos seguintes requisitos:
@@ -64,18 +46,26 @@ O banco de dados foi desenvolvido para atender aos seguintes requisitos:
 - **Exames Médicos**: Incluindo exames cardiológicos, neurológicos, ortopédicos e mapeamento genético.
 - **Vídeos de Partidas**: Links para vídeos de atletas em ação.
 
-### Principais Funcionalidades
-1. **Inserção de Dados**:
-   - Registros de atletas, treinadores e médicos.
-   - Adição de novas partidas e vídeos.
-2. **Consultas e Relatórios**:
-   - Estatísticas detalhadas por atleta e por partida.
-   - Histórico de exames médicos.
-   - Busca de vídeos por atleta, partida ou tipo de movimento.
-3. **Prevenção de Lesões e Melhoria de Desempenho**:
-   - Dados e vídeos integrados para treinamento de redes neurais com foco em:
-     - Predição de lesões.
-     - Identificação de padrões de desempenho.
+### Modelagem do Banco de Dados
+
+#### Modelo Entidade-Relacionamento (MER)
+![Modelo Entidade-Relacionamento](MER_modeloEntidadeRelacional.jpg)
+
+O Modelo Entidade-Relacionamento (MER) é utilizado para ilustrar as relações entre os diferentes elementos de um banco de dados. Ele foi empregado para elucidar como os atletas, treinadores, médicos, partidas, exames, estatísticas e vídeos interagem dentro do contexto das Olimpíadas. Este modelo auxilia no entendimento lógico das dependências entre entidades e seus atributos, sendo um passo crucial para a estruturação de um banco de dados eficiente.
+
+#### Esquema Relacional (ER)
+![Esquema Relacional](Esquema%20relacional.jpg)
+
+O Esquema Relacional (ER) representa como as tabelas foram efetivamente criadas no banco de dados. Este modelo deriva diretamente do MER e descreve a implementação física, incluindo a definição de chaves primárias, chaves estrangeiras e relações normalizadas. Ele é essencial para assegurar a integridade e a consistência dos dados, além de otimizar operações de inserção, atualização, exclusão e consultas.
+
+### Otimização de Estruturas
+
+Durante a transição do MER para o Esquema Relacional, foram analisadas diversas estratégias para melhorar o desempenho do banco de dados. A aplicação de técnicas de **normalização** e o esforço para minimizar tuplas espúrias e redundantes garantiram que:
+- As operações de inserção, remoção e atualização fossem eficientes.
+- As consultas mais frequentes fossem otimizadas.
+- Inconsistências nos dados fossem evitadas.
+
+Esse processo resultou em um banco de dados robusto e escalável, capaz de atender às demandas do projeto.
 
 ## Conclusão
 
