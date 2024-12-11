@@ -4,7 +4,7 @@ Este projeto é um sistema de banco de dados relacional para armazenar e gerenci
 ## Autores
 
 - **Lucas Sales Duarte**
-- **Lucas Melo Corlette**
+- **Lucas Corlete Alves de Melo**
 - **João Victor de Almeida**
 - **João Ferreira Battaglini**
 - **Jean Carlos Pereira Cassiano**
