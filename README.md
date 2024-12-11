@@ -1,7 +1,15 @@
 # Monitoramento de Atletas Olímpicos
 
 Este projeto é um sistema de banco de dados relacional para armazenar e gerenciar informações de atletas brasileiros que competiram em uma edição das Olimpíadas. Foi desenvolvido como parte da disciplina **SCC-640 - Bases de Dados**, ministrada pela **Profa. Dra. Elaine Parros Machado de Sousa** no Instituto de Ciências Matemáticas e de Computação (ICMC) da USP (Universidade de São Paulo) - São Carlos.
+## Autores
 
+- **Lucas Sales Duarte**
+- **Lucas Corlete Alves de Melo**
+- **João Victor de Almeida**
+- **João Ferreira Battaglini**
+- **Jean Carlos Pereira Cassiano**
+
+Todos são alunos de Engenharia de Computação na **Universidade de São Paulo (USP) - Campus São Carlos**.
 ## Introdução
 
 O monitoramento de atletas de alto rendimento é um tema essencial para a evolução da ciência esportiva e a promoção de melhores práticas de saúde e desempenho. No contexto das Olimpíadas, a competição mais prestigiada do esporte mundial, esse monitoramento se torna ainda mais crítico, dado o elevado nível de exigência física, técnica e psicológica imposto aos competidores. Contudo, as práticas atuais enfrentam desafios significativos, como a fragmentação dos dados, a falta de integração entre diferentes fontes e a dificuldade de análise em larga escala. 
@@ -67,15 +75,89 @@ Durante a transição do MER para o Esquema Relacional, foram analisadas diversa
 
 Esse processo resultou em um banco de dados robusto e escalável, capaz de atender às demandas do projeto.
 
+## Aplicação
+
+### Descrição do Projeto
+
+Este projeto consiste em uma aplicação de interface gráfica desenvolvida em Python utilizando a biblioteca Tkinter para interação com o usuário e oracledb para conexão e manipulação de um banco de dados Oracle. A aplicação permite realizar as seguintes operações:
+
+- **Inserção de Dados**: Inserir dados em diversas tabelas do banco de dados, como médicos, treinadores, atletas, esportes, partidas e estatísticas.
+- **Consulta de Dados**: Consultar jogadores associados a um esporte específico e seus respectivos dados de genomas e vídeos.
+
+#### Principais Funcionalidades
+
+1. Menu Principal
+
+Exibe as opções de:
+
+- **Inserir Dados**: Permite escolher uma tabela para inserção de dados.
+- **Selecionar Dados**: Permite consultar jogadores associados a um esporte.
+
+#### 2. Inserção de Dados
+
+Aplicação possui formulários personalizados para inserção de dados nas tabelas do banco. Cada tabela possui campos específicos, com validações apropriadas.
+
+Estas são algumas das tabelas suportadas:
+
+- Médico
+- Treinador
+- Atleta
+- Time
+- Esporte
+- Partida
+- Estatísticas de Partida
+- Disputa
+
+#### 3. Consulta de Dados
+
+Permite buscar jogadores por esporte, se eles satisfazerem a seguinte condição: O Atleta ter vídeos associados em todas as partidas que seu time jogou (exemplo de divisão relacional), exibindo informações como:
+
+- Nome do jogador
+- Genoma associado (se cadastrado)
+- Links de vídeos relacionados
+
+
+### Requisitos do Sistema
+
+#### 1. Dependências
+
+- Python 3.8 ou superior
+- Bibliotecas Python:
+  - **Tkinter**: Inclusa na biblioteca padrão do Python.
+  - **oracledb**: Para interação com o Oracle Database.
+- Banco de Dados Oracle: Necessário acesso ao servidor Oracle com as credenciais corretas.
+
+#### 2. Configuração do Ambiente
+
+1. Instale o Python em sua máquina.
+2. Instale a biblioteca `oracledb` utilizando o comando:
+   ```bash
+   pip install oracledb
+   ```
+3. Certifique-se de que o banco de dados Oracle está acessível e que as credenciais fornecidas estão corretas.
+
+### Estrutura do Código
+
+O código é estruturado em várias funções:
+
+- **Funções de Interface Gráfica**: Criam e gerenciam os componentes da interface usando Tkinter.
+- **Funções de Conexão e Inserção**: Gerenciam a conexão com o banco de dados e executam consultas SQL para inserir ou buscar dados.
+
+### Principais Arquivos
+
+- `app.py`: Arquivo principal contendo todo o código da aplicação.
+
+### Como Executar
+
+1. Clone ou baixe o repositório com o código fonte.
+2. Navegue até o diretório do projeto.
+3. Execute o arquivo principal:
+   ```bash
+   python ./src/app.py
+   ```
+4. Utilize a interface gráfica para realizar operações no banco de dados.
+
 ## Conclusão
 
 O banco de dados proposto é uma ferramenta essencial para melhorar a análise esportiva, a gestão de saúde e a aplicação de tecnologias de inteligência artificial no esporte. Este sistema contribui significativamente para a evolução da ciência esportiva, permitindo um acompanhamento detalhado do desempenho e da saúde dos atletas, além de fomentar o desenvolvimento de novas tecnologias para o esporte.
 
-## Autores
-
-- **Lucas Sales Duarte**
-- **Lucas Melo Corlette**
-- **João Alves de Almeida**
-- **João Ferreira Battaglini**
-
-Todos são alunos de Engenharia de Computação na **Universidade de São Paulo (USP) - Campus São Carlos**.
