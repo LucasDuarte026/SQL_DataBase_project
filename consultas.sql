@@ -36,8 +36,7 @@ FROM PARTIDA P
     AND T.SIGLA_TIME = D.SIGLA_TIME
     JOIN ATLETA A ON A.ATL_SIGLA_TIME = T.SIGLA_TIME
     LEFT JOIN GENOMA G ON G.ATLETA = A.CPF
-WHERE (P.SIGLA_ESPORTE = '111'
-    OR P.SIGLA_ESPORTE = '222')
+WHERE P.SIGLA_ESPORTE = '111'
     AND (P.LOCAL = 'PRAÇA DA LIBERDADE')
     AND (EXTRACT (MONTH FROM P.DATA) BETWEEN 6
     AND 11);
@@ -100,8 +99,8 @@ HAVING COUNT ( * ) > 1;
 -- -- -- -- --  CONSULTA 5  -- -- -- -- --
 -- -- -- -- ---- -- -- -- ---- -- -- -- --
 
-/*  Selecione a sigla e o nome do time que jogou ao máximo 2 partidas que houveram 
-    menos do que 2 gols por partida. A seleção deve tanto mostrar a sigla e o nome 
+/*  Selecione a sigla e o nome dos times de futebol que jogaram ao máximo 2 partidas que houveram 
+    mais do que 2 gols por partida. A seleção deve tanto mostrar a sigla e o nome 
     do time em questão como apresentar a quantidade de partidas em que houve essa ocasião */
 
 SELECT T.SIGLA_TIME, T.NOME, COUNT ( * ) AS PARTIDAS
@@ -110,14 +109,13 @@ FROM ESTAT_PARTIDA E
     AND P.LOCAL = E.EST_LOCAL
     JOIN DISPUTA D ON P.DATA = D.EST_DATA
     AND P.LOCAL = D.EST_LOCAL
-    RIGHT JOIN TIME T ON T.SIGLA_TIME = D.SIGLA_TIME
+    JOIN TIME T ON T.SIGLA_TIME = D.SIGLA_TIME
     AND T.SIGLA_ESPORTE = D.SIGLA_ESPORTE
-WHERE P.SIGLA_ESPORTE = '222'
+WHERE P.SIGLA_ESPORTE = '111'
     AND E.CRITERIO = 'GOLS'
-    AND E.VALOR > 1
+    AND E.VALOR >= 2
 GROUP BY T.SIGLA_TIME, T.NOME
-HAVING COUNT (E.VALOR) <= 2
-;
+HAVING COUNT (E.VALOR) <= 2;
 
 -- -- -- -- ---- -- -- -- ---- -- -- -- --
 -- -- -- -- --  CONSULTA 6  -- -- -- -- --
@@ -136,4 +134,23 @@ WHERE E.CRITERIO = 'GOLS'
     AND (P.LOCAL = 'PRAÇA DA LIBERDADE'
     OR P.LOCAL = 'CORONEL CERVANTES')
 GROUP BY P.SIGLA_ESPORTE, ES.NOME, P.NOME
-HAVING MAX (E.VALOR) >= 4;
+HAVING MAX (E.VALOR) >= 3;
+
+-- -- -- -- ---- -- -- -- ---- -- -- -- --
+-- -- -- -- --  CONSULTA 6  -- -- -- -- -- Corrigida
+-- -- -- -- ---- -- -- -- ---- -- -- -- --
+
+/*  Selecione as partidas com maior saldo de gols por esporte em que tenha acontecido 
+    ou na Praça da Liberdade ou na Coronel Cervantes. OBS: saldos de menos de 3 gols não devem ser selecionados 
+    Apresentar a sigla do esporte e seu nome, nome da partida, data e hora, local e saldo de gols*/
+
+SELECT ES.NOME, MAX (E.VALOR) AS MAXIMO_SALDO_GOL
+FROM PARTIDA P
+    JOIN ESTAT_PARTIDA E ON P.DATA = E.EST_DATA
+    AND P.LOCAL = E.EST_LOCAL
+    JOIN ESPORTE ES ON ES.SIGLA_ESPORTE = P.SIGLA_ESPORTE
+WHERE E.CRITERIO = 'GOLS'
+    AND (P.LOCAL = 'PRAÇA DA LIBERDADE'
+    OR P.LOCAL = 'CORONEL CERVANTES')
+GROUP BY ES.NOME
+HAVING MAX (E.VALOR) >= 3;
