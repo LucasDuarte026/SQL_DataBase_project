@@ -118,26 +118,7 @@ GROUP BY T.SIGLA_TIME, T.NOME
 HAVING COUNT (E.VALOR) <= 2;
 
 -- -- -- -- ---- -- -- -- ---- -- -- -- --
--- -- -- -- --  CONSULTA 6  -- -- -- -- --
--- -- -- -- ---- -- -- -- ---- -- -- -- --
-
-/*  Selecione as partidas com maior saldo de gols por esporte em que tenha acontecido 
-    ou na Praça da Liberdade ou na Coronel Cervantes. OBS: saldos de menos de 3 gols não devem ser selecionados 
-    Apresentar a sigla do esporte e seu nome, nome da partida, data e hora, local e saldo de gols*/
-
-SELECT P.SIGLA_ESPORTE, ES.NOME AS ESPORTE, P.NOME AS NOME_PARTIDA, MAX (E.VALOR) AS MAXIMO_SALDO_GOL
-FROM PARTIDA P
-    JOIN ESTAT_PARTIDA E ON P.DATA = E.EST_DATA
-    AND P.LOCAL = E.EST_LOCAL
-    JOIN ESPORTE ES ON ES.SIGLA_ESPORTE = P.SIGLA_ESPORTE
-WHERE E.CRITERIO = 'GOLS'
-    AND (P.LOCAL = 'PRAÇA DA LIBERDADE'
-    OR P.LOCAL = 'CORONEL CERVANTES')
-GROUP BY P.SIGLA_ESPORTE, ES.NOME, P.NOME
-HAVING MAX (E.VALOR) >= 3;
-
--- -- -- -- ---- -- -- -- ---- -- -- -- --
--- -- -- -- --  CONSULTA 6  -- -- -- -- -- Corrigida
+-- -- -- -- --  CONSULTA 6  -- -- -- -- -- 
 -- -- -- -- ---- -- -- -- ---- -- -- -- --
 
 /*  Selecione as partidas com maior saldo de gols por esporte em que tenha acontecido 
